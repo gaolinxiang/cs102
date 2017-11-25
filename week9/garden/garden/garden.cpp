@@ -13,23 +13,18 @@
 using namespace std;
 
 LL **a,**v,n,ans;
-bool ok[64];
-int m,k,b[6]; // b为6位01状态（dfs穷举用）
+int m,k,b[6],w; // b为6位01状态（dfs穷举用）
 
-void generateMatrixV(int len,int b){    // DFS生成转移矩阵
-    if(len==m+1){  // 边界
+void generateMatrixV(){    // DFS生成转移矩阵
+    for (int b=0;b<(w<<1);b++){
         int x=b&((1<<m)-1),y=b>>1;    // 低m位，高m位
         int cnt1=0,cnt2=0;  // 数有几位1
-        for(int i=1;i<=m;i++){
-            cnt1+=((b&(1<<i))>0);
-            cnt2+=((b&(1<<(i+1)))>0);
+        for(int i=0;i<m;i++){
+            cnt1+=((x&(1<<i))>0);
+            cnt2+=((y&(1<<i))>0);
         }
-        if(cnt1>k || cnt2>k) return; // 检验合法性
-        v[x][y]=1; ok[x]=ok[y]=1;
-        return; // 回溯
+        v[y][x]=(cnt1<=k && cnt2<=k); // 检验合法性
     }
-    generateMatrixV(len+1,b<<1);    // dfs下一位
-    generateMatrixV(len+1,(b<<1)|1);
 }
 
 LL** newMatrix(int n){ // 创建矩阵
@@ -59,7 +54,7 @@ LL** pow(LL** mt,int n,LL p){   // 矩阵幂次
     return p%2 ? mul(x2,mt,n) : x2;
 }
 
-void print(LL** a,int n){
+void print(LL** a,int n){   // 打印矩阵
     for (int i=0;i<n;i++){
         for (int j=0;j<n-1;j++) cout<<a[i][j]<<" ";
         cout<<a[i][n-1]<<endl;
@@ -69,12 +64,12 @@ void print(LL** a,int n){
 
 int main() {
     scanf("%lld%d%d",&n,&m,&k);
-    int w=(1<<m); // 状态数上限
+    w=(1<<m); // 状态数上限
     v=newMatrix(w);
-    generateMatrixV(0,0);   // 构造矩阵
+    generateMatrixV();   // 构造矩阵
+    
     a=pow(v,w,n);   // 矩阵快速幂
-    for(int i=0;i<w;i++) {
-        if(ok[i]) ans+=a[i][i]%MOD;
-    }
+    print(a,w);
+    for(int i=0;i<w;i++) ans+=a[i][i]%MOD;
     printf("%lld\n",ans%MOD);
 }
