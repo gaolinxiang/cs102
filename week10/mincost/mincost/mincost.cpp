@@ -38,6 +38,7 @@ int main() {
                 s=i; dmin=d[i];
             }
         }
+        if (s==B) break;
         visited[s]=true; // 该顶点加入已算出集合
         for (int t=1;t<=N;t++){
             if (d[s]/m[s][t]<d[t] && !visited[t]){
